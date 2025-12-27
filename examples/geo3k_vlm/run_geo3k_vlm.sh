@@ -80,9 +80,7 @@ fi
 
 # Common args
 CKPT_ARGS=(
-   --hf-checkpoint /root/model/${MODEL_NAME}
-   # vl model has rotary base 5000000
-   --rotary-base 5000000
+   --hf-checkpoint /root/models/${MODEL_NAME}
 )
 
 ROLLOUT_ARGS=(
@@ -155,11 +153,11 @@ MISC_ARGS=(
 # Backend-specific args
 if [ "$TRAIN_BACKEND" = "fsdp" ]; then
    BACKEND_ARGS=(
-   --train-backend fsdp
-   --gradient-checkpointing
-   --sglang-attention-backend fa3
-   --attn-implementation flash_attention_3
-   --update-weight-buffer-size 536870912
+      --train-backend fsdp
+      --gradient-checkpointing
+      --sglang-attention-backend fa3
+      --attn-implementation flash_attention_3
+      --update-weight-buffer-size 536870912
    )
    MODEL_ARGS=()
 else
@@ -194,7 +192,9 @@ else
    # get MODEL_ARGS from scripts/model for megatron backend
    SLIME_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." &>/dev/null && pwd)"
    MODEL_ARGS_FILE=$(echo "$MODEL_NAME" | sed 's/-Instruct//g; s/-Thinking//g; s/Qwen3-VL-/qwen3-/g; s/-2B/-1.7B/g')
-   source "${SLIME_DIR}/scripts/models/${MODEL_ARGS_FILE}.sh"
+   # VL models require rotary-base 5000000
+   MODEL_ARGS_ROTARY_BASE=5000000 source "${SLIME_DIR}/scripts/models/${MODEL_ARGS_FILE}.sh"
+   
 fi
 
 # Start Ray if not using external Ray
