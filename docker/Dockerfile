@@ -16,6 +16,31 @@ WORKDIR /root/
 
 RUN apt update
 RUN apt install -y nvtop rsync dnsutils
+# ------------------- 全局国内镜像设置 -------------------
+
+# 1️⃣ 使用国内 apt 源 (Ubuntu/Debian)
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends software-properties-common ca-certificates curl git && \
+    rm -rf /var/lib/apt/lists/*
+
+# 2️⃣ pip 全局国内镜像 (清华源)
+RUN python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    python3 -m pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+
+# 3️⃣ git clone 使用 githubfast.com 镜像
+# 方法一：直接替换 URL
+# 例如原来：
+# git clone https://github.com/Dao-AILab/flash-attention.git
+# 改为：
+# git clone https://githubfast.com/Dao-AILab/flash-attention.git
+
+# 方法二：如果仓库很多，可以统一用 git config 替换 github.com
+RUN git config --global url."https://githubfast.com/".insteadOf "https://github.com/"
+
+# 4️⃣ pip 不使用缓存
+ENV PIP_NO_CACHE_DIR=1
 
 # ====================================== Python dependencies ============================================
 

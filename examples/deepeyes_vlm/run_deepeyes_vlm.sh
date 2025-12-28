@@ -9,7 +9,7 @@
 # Configuration
 TRAIN_BACKEND=${SLIME_SCRIPT_TRAIN_BACKEND:-"megatron"}
 MODEL_NAME=${SLIME_SCRIPT_MODEL_NAME:-"Qwen3-VL-2B-Instruct"}
-DATASET_NAME=${SLIME_SCRIPT_DATASET_NAME:-"geo3k_imgurl"}
+DATASET_NAME=${SLIME_SCRIPT_DATASET_NAME:-"DeepEyes-Datasets-47k"}
 NUM_GPUS=${SLIME_SCRIPT_NUM_GPUS:-8}
 DATASET_LOCAL_NAME=$(basename "$DATASET_NAME")
 
@@ -98,6 +98,9 @@ ROLLOUT_ARGS=(
    --rollout-max-response-len 2048
    --rollout-temperature 0.8
    --global-batch-size 16 #64 #512
+   #
+   --max_turns
+
 )
 
 # required for vlm datasets
