@@ -91,15 +91,20 @@ ROLLOUT_ARGS=(
    --label-key answer
    --apply-chat-template
    --rollout-shuffle
-   --rm-type math
+   #--rm-type math
+   --rm-type deepeyes
    --num-rollout 3000
-   --rollout-batch-size 4 #64
-   --n-samples-per-prompt 4 #8
-   --rollout-max-response-len 2048
+   --rollout-batch-size 2 #64
+   --n-samples-per-prompt 2 #8
+   --rollout-max-response-len 1024
    --rollout-temperature 0.8
-   --global-batch-size 16 #64 #512
-   #
-   --max_turns
+   --global-batch-size 4 #64 #512
+   #multi-turn settings
+    --max-turns 3
+    --max-total-tokens 4096
+    --custom-generate-function-path examples.deepeyes_vlm.rollout.generate
+    --custom-rm-path examples.deepeyes_vlm.reward_deepeyes.async_compute_reward
+    --rollout_interaction_env_path: examples.vlm_multi_turn.env_deepeyes
 
 )
 
@@ -110,7 +115,7 @@ EVAL_ARGS=(
    --eval-interval 20
    --eval-prompt-data ${DATASET_LOCAL_NAME} /root/datasets/${DATASET_LOCAL_NAME}/test.parquet
    --n-samples-per-eval-prompt 1
-   --eval-max-response-len 2048
+   --eval-max-response-len 1024
 )
 
 GRPO_ARGS=(
@@ -121,6 +126,8 @@ GRPO_ARGS=(
    --entropy-coef 0.00
    --eps-clip 0.2
    --eps-clip-high 0.28
+  
+
 )
 
 OPTIMIZER_ARGS=(
