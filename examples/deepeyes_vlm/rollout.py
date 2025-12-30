@@ -160,14 +160,14 @@ async def generate(args: Any, sample: Sample, sampling_params) -> Sample:
         # Use the preloaded prompt (contains system + first image) as the initial conversation state
         messages = deepcopy(sample.prompt)
 
-        prompt_ids, image_data, multimodal_inputs = _encode_for_generation(
-            tokenizer,
-            processor,
-            messages,
-            sample.metadata,
-            getattr(args, "apply_chat_template", False),
-            args.apply_chat_template_kwargs,
-        )
+        # prompt_ids, image_data, multimodal_inputs = _encode_for_generation(
+        #     tokenizer,
+        #     processor,
+        #     messages,
+        #     sample.metadata,
+        #     getattr(args, "apply_chat_template", False),
+        #     args.apply_chat_template_kwargs,
+        # )
 
         #sample.rollout_response_length is length of response produced by the actor,
         #excluding initial prompt tokens and env feedback tokens.

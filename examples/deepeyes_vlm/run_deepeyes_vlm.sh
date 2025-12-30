@@ -87,7 +87,7 @@ CKPT_ARGS=(
 
 ROLLOUT_ARGS=(
    --prompt-data /root/datasets/${DATASET_LOCAL_NAME}/train.parquet
-   --input-key problem
+   --input-key prompt
    --label-key answer
    --apply-chat-template
    --rollout-shuffle
@@ -101,10 +101,10 @@ ROLLOUT_ARGS=(
    --global-batch-size 4 #64 #512
    #multi-turn settings
     --max-turns 3
-    --max-total-tokens 4096
+   #  --max-total-tokens 4096
     --custom-generate-function-path examples.deepeyes_vlm.rollout.generate
     --custom-rm-path examples.deepeyes_vlm.reward_deepeyes.async_compute_reward
-    --rollout_interaction_env_path: examples.vlm_multi_turn.env_deepeyes
+    --rollout-interaction-env-path examples.deepeyes_vlm.env_deepeyes
 
 )
 

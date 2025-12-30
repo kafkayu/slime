@@ -224,6 +224,7 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                     "This is not recommended if the dataset is large."
                 ),
             )
+            
             parser.add_argument(
                 "--rollout-max-response-len",
                 type=int,
@@ -231,6 +232,14 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                 help=(
                     "The maximum length of the response for the inference engine during rollout. "
                     "It is basically `max_tokens` in sglang."
+                ),
+            )
+            parser.add_argument(
+                "--max-turns",
+                type=int,
+                default=1,
+                help=(
+                    "The maximum turns of turns` in sglang."
                 ),
             )
             parser.add_argument(
@@ -351,6 +360,16 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                 help=(
                     "The custom function for logging eval rollout data. "
                     "def log_eval_rollout_data(rollout_id, args, data, extra_metrics) -> bool. "
+                    "The return value indicates whether to skip the default logging. "
+                ),
+            )
+            parser.add_argument(
+                "--rollout-interaction-env-path",
+                type=str,
+                default=None,
+                help=(
+                    "The custom function for env rollout data. "
+                    "def env "
                     "The return value indicates whether to skip the default logging. "
                 ),
             )
