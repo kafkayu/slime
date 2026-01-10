@@ -1,2 +1,2 @@
-max_turns: 3
+max_turns: 2
 rollout_interaction_env_path: examples.opencua_vlm_multi_turn.env_opencua

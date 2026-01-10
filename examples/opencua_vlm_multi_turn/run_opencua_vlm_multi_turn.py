@@ -59,17 +59,17 @@ def execute():
         "--label-key relative_bbox "
         '--multimodal-keys \'{"image": "images_base64"}\' '
         #'--metadata-key relative_bbox '
-        "--rm-type math "
+        "--rm-type opencua_click "
         "--apply-chat-template "
         "--custom-generate-function-path examples.opencua_vlm_multi_turn.rollout.generate "
         "--custom-config-path examples/opencua_vlm_multi_turn/opencua_vlm_multi_turn_config.yaml "
         "--rollout-shuffle "
         "--num-rollout 3000 "
-        "--rollout-batch-size 4 "
-        "--n-samples-per-prompt 4 "
+        "--rollout-batch-size 1 "
+        "--n-samples-per-prompt 8 "
         "--rollout-max-response-len 4096 "
         "--rollout-temperature 1 "
-        "--global-batch-size 16 "
+        "--global-batch-size 8 "
     )
 
     # eval_args = (
@@ -156,7 +156,7 @@ def execute():
         f"{backend_args} "
         f"{misc_args} "
         f"{wandb_args} "
-        f"--debug-rollout-only"
+
         # f"{get_default_wandb_args(__file__)} "
     )
 

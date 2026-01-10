@@ -72,21 +72,30 @@ class OpencuaEnv(BaseInteractionEnv):
         try:
             bbox = json.loads(self.ground_truth)
             x_min, y_min, x_max, y_max = bbox
+         
         except Exception:
             return 0.0
 
         # Parse the \boxed{(x,y)} pattern
-        m = re.search(r"\\boxed\(\(\s*([\d\.]+)\s*,\s*([\d\.]+)\s*\)\s*\)", answer)
+        m = re.search(r"\\boxed\s*\{\s*\(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\)\s*\}", answer)
+        logger.info(f'Parse the boxed pattern, m={m},answer={answer}')
         if not m:
             return 0.0
         try:
             x = float(m.group(1))
             y = float(m.group(2))
+            logger.info(f'score_answer,boxed x={x},y={y}')
         except Exception:
+            logger.info(f'm can not be extracted')
             return 0.0
 
         # Reward = 1 if point is inside bbox
-        return 1.0 if x_min <= x <= x_max and y_min <= y <= y_max else 0.0
+        if x_min <= x <= x_max and y_min <= y <= y_max:
+            return 1.0 
+        elif x>1 or y> 1 or x<0 or y <0:
+            return 0.0 # not relative grounding
+        else:
+            return 0.2 # realtive grounding, format reward
 
 
     # -----------------------------
@@ -121,7 +130,8 @@ class OpencuaEnv(BaseInteractionEnv):
 
         if horz == "horizontally aligned" and vert == "vertically aligned":
             return "Point is inside the box."
-
+        if x<0 or x>1 or y<0 or y>1:
+            return f'The range of x and y must be in [0,1]'
         return f"Point is outside the box: {horz} and {vert}."
 
     # -----------------------------
@@ -144,6 +154,7 @@ class OpencuaEnv(BaseInteractionEnv):
 
         parsed_answer = response_text.strip()
         score = self._score_answer(parsed_answer)
+        logger.info(f'parsed_answer={parsed_answer},score={score}')
         self.last_score = score
 
         # Parse the predicted point for feedback
@@ -166,6 +177,8 @@ class OpencuaEnv(BaseInteractionEnv):
             "parsed_answer": parsed_answer,
             "score": score,
             "turn": self.turn,
+            "tool_executed":True,
+            "answer_missing": True if score==0.0 else False
         }
 
         return obs, done, info
