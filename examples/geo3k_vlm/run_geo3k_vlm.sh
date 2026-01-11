@@ -163,30 +163,25 @@ if [ "$TRAIN_BACKEND" = "fsdp" ]; then
 else
    # megatron backend (default)
    BACKEND_ARGS=(
-   --train-backend megatron
-   --load /root/model/${MODEL_NAME}
-   --tensor-model-parallel-size 4
-   --sequence-parallel
-   --pipeline-model-parallel-size 1
-   --context-parallel-size 1
-   --expert-model-parallel-size 1
-   --expert-tensor-parallel-size 1
-   --recompute-granularity full
-   --recompute-method uniform
-   --recompute-num-layers 1
-   --use-dynamic-batch-size
-   --max-tokens-per-gpu 2048 #4096
-   --attention-dropout 0.0
-   --hidden-dropout 0.0
-   # --accumulate-allreduce-grads-in-fp32
-   # --attention-softmax-in-fp32
-   --attention-backend flash
-   --megatron-to-hf-mode bridge
-   --bf16 \
-   --transformer-impl transformer_engine \
-   --fp8-format 'e4m3' \
-   --fp8-amax-history-len 1024 \
-   --fp8-amax-compute-algo max \
+      --train-backend megatron
+      --load /root/models/${MODEL_NAME}
+      --tensor-model-parallel-size 4
+      --sequence-parallel
+      --pipeline-model-parallel-size 1
+      --context-parallel-size 1
+      --expert-model-parallel-size 1
+      --expert-tensor-parallel-size 1
+      --recompute-granularity full
+      --recompute-method uniform
+      --recompute-num-layers 1
+      --use-dynamic-batch-size
+      --max-tokens-per-gpu 4096
+      --attention-dropout 0.0
+      --hidden-dropout 0.0
+      --accumulate-allreduce-grads-in-fp32
+      --attention-softmax-in-fp32
+      --attention-backend flash
+      --megatron-to-hf-mode bridge
    )
    
    # get MODEL_ARGS from scripts/model for megatron backend
