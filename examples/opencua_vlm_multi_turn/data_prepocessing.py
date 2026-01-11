@@ -1,16 +1,14 @@
-import json
 import base64
+import json
 from io import BytesIO
+
+from datasets import load_dataset
 from PIL import Image
-from datasets import load_dataset, Features, Value
 
 # -------------------------
 # 1. Load dataset
 # -------------------------
-dataset = load_dataset(
-    "parquet",
-    data_files="/root/datasets/opencua/train-00000-of-00162.parquet"
-)["train"]
+dataset = load_dataset("parquet", data_files="/root/datasets/opencua/train-00000-of-00162.parquet")["train"]
 
 # -------------------------
 # 2. Helper functions
@@ -31,6 +29,7 @@ Output the final answer in \\boxed{(x,y)}.
 Do not include any explanation outside the box.
 """
 
+
 def pil_to_base64(image: Image.Image) -> str:
     buffered = BytesIO()
     image.save(buffered, format="PNG")
@@ -39,6 +38,7 @@ def pil_to_base64(image: Image.Image) -> str:
     while len(img_base64) % 4 != 0:
         img_base64 += "="
     return f"data:image/png;base64,{img_base64}"
+
 
 # -------------------------
 # 3. Processing function (batched)
@@ -72,7 +72,7 @@ def process_batch(batch):
         relative_bboxes.append(json.dumps(rel_bbox))
 
         # -------- images -> base64 list --------
-        img_entry = ex["images"]  # 
+        img_entry = ex["images"]  #
         if isinstance(img_entry, list):
             base64_list = []
             for im in img_entry:
@@ -94,6 +94,7 @@ def process_batch(batch):
         "relative_bbox": relative_bboxes,
         "images_base64": images_base64,
     }
+
 
 # -------------------------
 # 4. Map dataset

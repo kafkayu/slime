@@ -17,9 +17,12 @@ from slime.utils.types import Sample
 
 DEFAULT_ENV_MODULE = "examples.vlm_multi_turn.env_opencua"
 
-DEBUG=True
+DEBUG = True
 import logging
+
 logger = logging.getLogger(__name__)
+
+
 # logger.info(
 #     f"Finish rollout: {[str(sample.prompt) + sample.response]}, label: {sample.label}, reward: {sample.reward}",
 # )

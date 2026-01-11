@@ -246,7 +246,7 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                     "This is not recommended if the dataset is large."
                 ),
             )
-            
+
             parser.add_argument(
                 "--rollout-max-response-len",
                 type=int,
@@ -260,9 +260,7 @@ def get_slime_extra_args_provider(add_custom_arguments=None):
                 "--max-turns",
                 type=int,
                 default=1,
-                help=(
-                    "The maximum turns of turns` in sglang."
-                ),
+                help=("The maximum turns of turns` in sglang."),
             )
             parser.add_argument(
                 "--rollout-skip-special-tokens",

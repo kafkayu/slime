@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import logging
 import re
-from copy import deepcopy
 from typing import Any
 
 try:
@@ -12,8 +11,6 @@ except Exception:  # pragma: no cover - optional dependency
     orjson = None
 from examples.opencua_vlm_multi_turn.base_env import BaseInteractionEnv
 
-from slime.rollout.rm_hub import grade_answer_verl
-from slime.rollout.rm_hub.math_utils import extract_answer as extract_boxed_answer
 from slime.utils.types import Sample
 
 logger = logging.getLogger(__name__)
@@ -27,37 +24,34 @@ SUPPORTED_TOOL_NAMES = {"calc_score", "calc_opencua_reward"}
 class OpencuaEnv(BaseInteractionEnv):
     """
     Minimal environment for OpenCUA tasks where the model outputs a \boxed{(x,y)} response.
-    
+
     Reward is 1.0 if the predicted point is inside the ground-truth relative_bbox,
     0.0 otherwise. Feedback is provided in English indicating if the point is
     left/right/up/down relative to the target bbox.
     """
 
     def __init__(self, *, ground_truth: str | None = None, max_turns: int | None = None):
-            """
-            Args:
-                ground_truth (str): JSON string of relative bbox [x_min, y_min, x_max, y_max]
-                max_turns (int | None): maximum allowed steps per episode
-            """
-            self.ground_truth = str(ground_truth) if ground_truth is not None else None
-            self.last_score: float | None = None
-            self.turn = 0
-            self.max_turns = max_turns
+        """
+        Args:
+            ground_truth (str): JSON string of relative bbox [x_min, y_min, x_max, y_max]
+            max_turns (int | None): maximum allowed steps per episode
+        """
+        self.ground_truth = str(ground_truth) if ground_truth is not None else None
+        self.last_score: float | None = None
+        self.turn = 0
+        self.max_turns = max_turns
+
     def reset(self):
-            """Reset the environment to start a new episode."""
-            self.turn = 0
-            self.last_score = None
-            observation = {}  # No initial observation needed
-            reset_info = {"ground_truth_available": self.ground_truth is not None}
-            return observation, reset_info
+        """Reset the environment to start a new episode."""
+        self.turn = 0
+        self.last_score = None
+        observation = {}  # No initial observation needed
+        reset_info = {"ground_truth_available": self.ground_truth is not None}
+        return observation, reset_info
 
     def close(self):
         """No resources to release in this minimal environment."""
         return
-
-
-
-
 
     # -----------------------------
     # Reward computation
@@ -72,31 +66,30 @@ class OpencuaEnv(BaseInteractionEnv):
         try:
             bbox = json.loads(self.ground_truth)
             x_min, y_min, x_max, y_max = bbox
-         
+
         except Exception:
             return 0.0
 
         # Parse the \boxed{(x,y)} pattern
         m = re.search(r"\\boxed\s*\{\s*\(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\)\s*\}", answer)
-        logger.info(f'Parse the boxed pattern, m={m},answer={answer}')
+        logger.info(f"Parse the boxed pattern, m={m},answer={answer}")
         if not m:
             return 0.0
         try:
             x = float(m.group(1))
             y = float(m.group(2))
-            logger.info(f'score_answer,boxed x={x},y={y}')
+            logger.info(f"score_answer,boxed x={x},y={y}")
         except Exception:
-            logger.info(f'm can not be extracted')
+            logger.info("m can not be extracted")
             return 0.0
 
         # Reward = 1 if point is inside bbox
         if x_min <= x <= x_max and y_min <= y <= y_max:
-            return 1.0 
-        elif x>1 or y> 1 or x<0 or y <0:
-            return 0.0 # not relative grounding
+            return 1.0
+        elif x > 1 or y > 1 or x < 0 or y < 0:
+            return 0.0  # not relative grounding
         else:
-            return 0.2 # realtive grounding, format reward
-
+            return 0.2  # realtive grounding, format reward
 
     # -----------------------------
     # Directional feedback
@@ -130,8 +123,8 @@ class OpencuaEnv(BaseInteractionEnv):
 
         if horz == "horizontally aligned" and vert == "vertically aligned":
             return "Point is inside the box."
-        if x<0 or x>1 or y<0 or y>1:
-            return f'The range of x and y must be in [0,1]'
+        if x < 0 or x > 1 or y < 0 or y > 1:
+            return "The range of x and y must be in [0,1]"
         return f"Point is outside the box: {horz} and {vert}."
 
     # -----------------------------
@@ -154,7 +147,7 @@ class OpencuaEnv(BaseInteractionEnv):
 
         parsed_answer = response_text.strip()
         score = self._score_answer(parsed_answer)
-        logger.info(f'parsed_answer={parsed_answer},score={score}')
+        logger.info(f"parsed_answer={parsed_answer},score={score}")
         self.last_score = score
 
         # Parse the predicted point for feedback
@@ -177,8 +170,8 @@ class OpencuaEnv(BaseInteractionEnv):
             "parsed_answer": parsed_answer,
             "score": score,
             "turn": self.turn,
-            "tool_executed":True,
-            "answer_missing": True if score==0.0 else False
+            "tool_executed": True,
+            "answer_missing": True if score == 0.0 else False,
         }
 
         return obs, done, info

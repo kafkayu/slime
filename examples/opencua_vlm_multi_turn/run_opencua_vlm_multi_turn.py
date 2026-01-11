@@ -156,7 +156,6 @@ def execute():
         f"{backend_args} "
         f"{misc_args} "
         f"{wandb_args} "
-
         # f"{get_default_wandb_args(__file__)} "
     )
 
@@ -169,5 +168,5 @@ def execute():
 
 
 if __name__ == "__main__":
-    #prepare()
+    # prepare()
     execute()

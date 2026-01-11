@@ -14,6 +14,7 @@ from .math_utils import extract_answer as extract_boxed_answer
 from .math_utils import grade_answer_verl
 from .opencua_click import compute_opencua_reward
 
+
 async def remote_rm(args, sample: Sample):
     payload = {
         "prompt": sample.prompt,
@@ -61,7 +62,7 @@ async def async_rm(args, sample: Sample, **kwargs):
     elif rm_type == "random":
         return random.randint(0, 1)
     elif rm_type == "opencua_click":
-        return compute_opencua_reward(response,label, metadata=metadata)
+        return compute_opencua_reward(response, label, metadata=metadata)
     elif rm_type:
         raise NotImplementedError(f"Rule-based RM for {rm_type} is not implemented.")
     else:
